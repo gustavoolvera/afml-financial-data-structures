@@ -38,3 +38,6 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Notas de trabajo locales (no forman parte del proyecto)
+CLAUDE.md
