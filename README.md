@@ -1,4 +1,4 @@
-# AFML — Capítulo 2: Estructuras de datos financieros
+# AFML Capítulo 2: Estructuras de datos financieros
 
 > **Estado: en desarrollo.** Parte de lo implementado está validado y parte
 > sigue abierta. Ver [Estado por componente](#estado-por-componente).
@@ -11,7 +11,7 @@ learning a datos financieros, conocido por insistir en que los métodos
 estándar de ML fallan en finanzas si no se adaptan a la estructura particular
 de los datos de mercado.
 
-Su **Capítulo 2 — Financial Data Structures** es el que trabaja este
+Su **Capítulo 2 (Financial Data Structures)** es el que trabaja este
 repositorio. La idea central: muestrear el mercado por **reloj de calendario**
 (una barra cada 5 minutos, cada hora, cada día) es arbitrario, porque la
 actividad no se reparte de forma uniforme en el tiempo. El capítulo propone
@@ -52,7 +52,6 @@ data/raw/ESZ4_2024-09-20_2024-12-20_trades.parquet
 | Tick / Volume / Dollar bars | Funciona | Umbrales calibrados a igual recuento |
 | **Dollar Imbalance Bars (§2.3.2.2)** | **No converge** | Ver abajo |
 | Consolidación y verificación de datos | Funciona | `consolidar_raw.py`, `verificar_raw.py` |
-| Diagnósticos (Hurst, variance ratio) | Pendiente de reincorporar | El guion no está en el repo |
 
 ### El problema abierto: las Imbalance Bars
 
@@ -67,11 +66,11 @@ barra cierra en T = 1, o explota y una sola barra absorbe gran parte de la
 muestra. No hay rango intermedio utilizable.
 
 Esto **no está resuelto**. Lo que hay hasta ahora son indicios de que el
-problema está en el estimador y no en la implementación —la relación
+problema está en el estimador y no en la implementación (la relación
 señal/ruido de `E[b·v]` es de varios miles, y el flujo firmado tiene memoria
-larga— pero falta trabajo para afirmarlo con solidez. La figura
+larga), pero falta trabajo para afirmarlo con solidez. La figura
 `data/figures/ES_2024_dib_threshold_trajectory.png` muestra la trayectoria del
-umbral.
+umbral en una ejecución anterior; por ahora el script no la regenera.
 
 **Decisión de diseño:** las ecuaciones de AFML no se modifican. No se añaden
 suelos, techos ni tamaños objetivo para forzar barras de tamaño razonable.
@@ -115,9 +114,12 @@ ticks en Python puro no serían viables.
 
 - Determinar si las Imbalance Bars son recuperables sobre estos datos o si la
   degeneración es inevitable con este estimador.
-- Reincorporar el guion de diagnósticos (`diagnostics_2_1_a.py`).
 - Pruebas unitarias de los núcleos de cálculo.
-- Fijar una licencia.
+
+## Licencia
+
+Código bajo licencia [MIT](LICENSE). Los datos de Databento no se incluyen
+y están sujetos a la licencia del proveedor.
 
 ## Referencia
 

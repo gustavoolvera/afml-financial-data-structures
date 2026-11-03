@@ -20,10 +20,6 @@ sigue siendo literalmente
 
 sin suelos, techos, tamanos objetivo ni escalado por volatilidad. Si el umbral
 degenera, el script lo REPORTA y marca la serie como invalida.
-
-Los analisis exploratorios (Hurst, variance ratio, senal/ruido, comparacion con
-el agresor del exchange) viven en `diagnostics_2_1_a.py` y estan etiquetados
-como DIAGNOSTICO, no como parte de la definicion de AFML (§16).
 """
 
 from __future__ import annotations
@@ -541,22 +537,24 @@ def show_trajectory(rep: ac.DIBReport, n_blocks: int = 12) -> None:
               f"{c['E_bv_prior'].abs().mean():>14.4e}{c['threshold_usd'].mean():>14.4e}"
               f"{c['n_ticks'].mean():>13.2f}{c['imbalance_usd'].abs().mean():>14.4e}")
 
-    fig, axes = plt.subplots(3, 1, figsize=(13, 9), sharex=True)
-    axes[0].semilogy(t["bar"], t["threshold_usd"], lw=0.8, color="#D85A30")
-    axes[0].set_ylabel("umbral (USD)")
-    axes[0].set_title("Trayectoria del umbral AFML  E[T]·|E[b·v]|  (escala log)")
-    axes[1].semilogy(t["bar"], t["E_T_prior"], lw=0.8, color="#378ADD")
-    axes[1].set_ylabel("E[T] (ticks)")
-    axes[2].semilogy(t["bar"], t["n_ticks"].clip(lower=1), lw=0.8, color="#7F77DD")
-    axes[2].set_ylabel("n_ticks por barra")
-    axes[2].set_xlabel("indice de barra")
-    for a in axes:
-        a.grid(True, alpha=0.3)
-    plt.tight_layout()
-    f = FIGS_PATH / "ES_2024_dib_threshold_trajectory.png"
-    plt.savefig(f, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    print(f"  Figura: {f}")
+    # Figura de la trayectoria DESACTIVADA por ahora: las Imbalance Bars no
+    # convergen y la imagen no se regenera. Para reactivarla, quitar los "#".
+    # fig, axes = plt.subplots(3, 1, figsize=(13, 9), sharex=True)
+    # axes[0].semilogy(t["bar"], t["threshold_usd"], lw=0.8, color="#D85A30")
+    # axes[0].set_ylabel("umbral (USD)")
+    # axes[0].set_title("Trayectoria del umbral AFML  E[T]·|E[b·v]|  (escala log)")
+    # axes[1].semilogy(t["bar"], t["E_T_prior"], lw=0.8, color="#378ADD")
+    # axes[1].set_ylabel("E[T] (ticks)")
+    # axes[2].semilogy(t["bar"], t["n_ticks"].clip(lower=1), lw=0.8, color="#7F77DD")
+    # axes[2].set_ylabel("n_ticks por barra")
+    # axes[2].set_xlabel("indice de barra")
+    # for a in axes:
+    #     a.grid(True, alpha=0.3)
+    # plt.tight_layout()
+    # f = FIGS_PATH / "ES_2024_dib_threshold_trajectory.png"
+    # plt.savefig(f, dpi=150, bbox_inches="tight")
+    # plt.close(fig)
+    # print(f"  Figura: {f}")
 
 
 def sweep_E_T_init(df_all: pd.DataFrame, b_t: np.ndarray, max_bars: int) -> None:
