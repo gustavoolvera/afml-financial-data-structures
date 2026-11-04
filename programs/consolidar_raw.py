@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-consolidar_raw.py — une los trozos de un contrato en un unico parquet
+consolidar_raw.py: une los trozos de un contrato en un unico parquet
 
 Databento entrega los rangos largos partidos en varios ficheros, y los trozos
 CONSECUTIVOS SE SOLAPAN: el ultimo dia de un trozo aparece entero tambien al
@@ -107,7 +107,7 @@ def verificar_solape(a: Path, b: Path, corte: pa.Scalar) -> tuple[bool, int]:
 
 def consolidar(simbolo: str, trozos: list[Path], dry_run: bool,
                verificar: bool) -> int:
-    hr(f"{simbolo} — {len(trozos)} trozos")
+    hr(f"{simbolo}: {len(trozos)} trozos")
 
     if len(trozos) == 1:
         print("  Ya esta en un unico fichero. Nada que hacer.")

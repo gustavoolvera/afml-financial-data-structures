@@ -87,7 +87,7 @@ else:
             mostrar_bloque(f"Primeras {N_HEAD} filas", grupo.head(N_HEAD))
             mostrar_bloque(f"Ultimas  {N_TAIL} filas", grupo.tail(N_TAIL))
     else:
-        print("  Columna 'symbol' no encontrada — mostrando sobre el DataFrame completo.")
+        print("  Columna 'symbol' no encontrada: mostrando sobre el DataFrame completo.")
         print(f"  Columnas: {list(df.columns)}\n")
         mostrar_bloque(f"Primeras {N_HEAD} filas", df.head(N_HEAD))
         mostrar_bloque(f"Ultimas  {N_TAIL} filas", df.tail(N_TAIL))

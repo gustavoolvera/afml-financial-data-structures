@@ -1,6 +1,6 @@
 """
 ═══════════════════════════════════════════════════════════════════════════════
-AFML — Capitulo 2, Ejercicio 2.1(a)
+AFML: Capitulo 2, Ejercicio 2.1(a)
 ETF Trick + barras alternativas + Dollar Imbalance Bars (AFML §2.3.2, §2.4.1)
 E-mini S&P 500 (ES), contratos ESH4 / ESM4 / ESU4 / ESZ4, ano 2024 completo
 ═══════════════════════════════════════════════════════════════════════════════
@@ -75,11 +75,11 @@ CONTRACTS = [
     {"symbol": "ESZ4", "file": RAW_PATH / "ESZ4_2024-09-20_2024-12-20_trades.parquet"},
 ]
 
-# §14 — calibracion para IGUAL numero de barras
+# §14: calibracion para IGUAL numero de barras
 TRAIN_FRACTION = 0.30          # muestra de entrenamiento (umbrales) vs evaluacion
 TARGET_BARS_EVAL = 5_000       # barras objetivo en la muestra de evaluacion
 
-# AFML §2.3.2 — Dollar Imbalance Bars
+# AFML §2.3.2: Dollar Imbalance Bars
 DIB_SPAN_T = 200               # span EWMA de E[T]      (en barras completadas)
 DIB_SPAN_BV = 17_000           # span EWMA de E[b·v]    (en ticks)
 DIB_BURN = 50_000              # ticks de burn-in, EXCLUIDOS del loop principal
@@ -104,7 +104,7 @@ def main(max_ticks: int | None = None) -> int:
         p.mkdir(parents=True, exist_ok=True)
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 1 — Carga, rolls y construccion de la serie continua")
+    hr("PASO 1: Carga, rolls y construccion de la serie continua")
     # ══════════════════════════════════════════════════════════════════════════
     if max_ticks:
         print(f"  *** MODO PRUEBA: max {int(max_ticks):,} ticks por contrato ***")
@@ -142,14 +142,14 @@ def main(max_ticks: int | None = None) -> int:
     print("\n  Auditoria de segmentos (test independiente, puede fallar):")
     print(seg.to_string())
     n_dup = ac.count_duplicate_timestamps(df_all)
-    print(f"\n  ts_event duplicados: {n_dup:,} ({n_dup/len(df_all):.3%}) — "
+    print(f"\n  ts_event duplicados: {n_dup:,} ({n_dup/len(df_all):.3%}): "
           f"esperado: CME emite varios prints por orden agresora que barre niveles.")
 
     # ── Continuidad temporal, consciente de los limites de roll ──────────────
     validate_continuity(df_all, "ES_combinado", set(roll_rep.roll_ts))
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 2 — ETF Trick (AFML §2.4.1) y tick rule (AFML §2.3.2)")
+    hr("PASO 2: ETF Trick (AFML §2.4.1) y tick rule (AFML §2.3.2)")
     # ══════════════════════════════════════════════════════════════════════════
     etf_K, etf_h, is_roll = ac.etf_trick(df_all, multiplier=PHI)
     b_t = ac.tick_rule_on_etf_k(etf_K, b_init=1.0)
@@ -175,7 +175,7 @@ def main(max_ticks: int | None = None) -> int:
         print(f"    [{'OK ' if r['ok'] else 'FALLO'}] {r['test']:<58} "
               f"{r['valor']:.3e}  (tol {r['tolerancia']:.0e})")
     if not val["ok"].all():
-        raise ac.AFMLDataError("Validacion del ETF Trick fallida — ver tabla arriba")
+        raise ac.AFMLDataError("Validacion del ETF Trick fallida: ver tabla arriba")
 
     etf_file = ETF_TRICK_PATH / "ES_2024_etf_series.parquet"
     cols = ["ts_event", "symbol", "price_raw", "size_contracts", "dollar_value_usd",
@@ -191,7 +191,7 @@ def main(max_ticks: int | None = None) -> int:
     del etf_h, is_roll
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 3 — Barras estandar con umbrales CALIBRADOS a igual recuento (§14)")
+    hr("PASO 3: Barras estandar con umbrales CALIBRADOS a igual recuento (§14)")
     # ══════════════════════════════════════════════════════════════════════════
     n = len(df_all)
     n_train = int(n * TRAIN_FRACTION)
@@ -232,10 +232,10 @@ def main(max_ticks: int | None = None) -> int:
     spread = max(counts.values()) / max(1, min(counts.values()))
     print(f"\n  Recuentos: {counts}   ratio max/min = {spread:.3f}")
     print(f"  {'OK: comparacion valida' if spread < 1.25 else 'AVISO: recuentos aun dispares'}"
-          f" — sin esto, curtosis/varianza/autocorrelacion miden el numero de barras.")
+          f": sin esto, curtosis/varianza/autocorrelacion miden el numero de barras.")
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 4 — Evaluacion estadistica (§15)")
+    hr("PASO 4: Evaluacion estadistica (§15)")
     # ══════════════════════════════════════════════════════════════════════════
     rets, stats = {}, {}
     for bt in ("tick", "volume", "dollar"):
@@ -283,12 +283,12 @@ def main(max_ticks: int | None = None) -> int:
     print("\n  " + interpret_results(stats, vov, counts))
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 5 — Estabilidad del recuento semanal de barras")
+    hr("PASO 5: Estabilidad del recuento semanal de barras")
     # ══════════════════════════════════════════════════════════════════════════
     weekly_stability(bars, df_eval, roll_rep)
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 6 — Dollar Imbalance Bars (AFML §2.3.2) — regla SIN modificar")
+    hr("PASO 6: Dollar Imbalance Bars (AFML §2.3.2), regla SIN modificar")
     # ══════════════════════════════════════════════════════════════════════════
     print("  Regla de cierre : |θ_T| >= E_0[T] · |E_0[b_t·v_t]|   (literal, AFML §2.3.2)")
     print("  θ_T             = Σ b_t·v_t ,  b_t = tick rule sobre etf_K,")
@@ -311,7 +311,7 @@ def main(max_ticks: int | None = None) -> int:
         dib_rep = e.report
         print("\n" + dib_rep.to_text())
         print("\n  " + "!" * 74)
-        print("  DEGENERACION DEL ESTIMADOR AFML — la regla NO se ha modificado.")
+        print("  DEGENERACION DEL ESTIMADOR AFML: la regla NO se ha modificado.")
         print(f"  {e}")
         print("  " + "!" * 74)
 
@@ -332,7 +332,7 @@ def main(max_ticks: int | None = None) -> int:
                            engine="pyarrow", compression="snappy")
         s = ac.evaluate_returns(dib_ret["r_t"].to_numpy(), "dollar_imbalance")
         if s.get("insufficient"):
-            print(f"\n  DIB: solo {s['n']} retornos utiles — muestra insuficiente para")
+            print(f"\n  DIB: solo {s['n']} retornos utiles: muestra insuficiente para")
             print("  inferencia estadistica. Comparacion con dollar bars OMITIDA (§8).")
         else:
             lo, hi = s["acf1_ci95"]
@@ -359,7 +359,7 @@ def main(max_ticks: int | None = None) -> int:
         print("\n  Comparaciones estadisticas con DIB: OMITIDAS (serie invalida, §8).")
 
     # ══════════════════════════════════════════════════════════════════════════
-    hr("PASO 7 — Robustez: barrido de E_0[T] (¿es un artefacto de la inicializacion?)")
+    hr("PASO 7: Robustez: barrido de E_0[T] (¿es un artefacto de la inicializacion?)")
     # ══════════════════════════════════════════════════════════════════════════
     sweep_E_T_init(df_all, b_t, max_bars)
 
@@ -386,7 +386,7 @@ def validate_continuity(df: pd.DataFrame, label: str, roll_ts: set,
     1 h despues de que expire el viejo) quedaba asi enmascarado como evento
     esperado. Aqui los huecos en fronteras de roll se clasifican por separado.
     """
-    hr(f"Continuidad temporal — {label}", "─")
+    hr(f"Continuidad temporal: {label}", "─")
     ts = df["ts_event"]
     d = ts.diff()
     idx = d[d > pd.Timedelta(hours=gap_hours)].index
@@ -497,7 +497,7 @@ def weekly_stability(bars: dict, df_eval: pd.DataFrame, roll_rep) -> None:
     print(f"  temporal del muestreo y no el numero de barras: '{best}' es el mas estable.")
 
     fig, ax = plt.subplots(figsize=(14, 6))
-    fig.suptitle("E-mini S&P 500 — Recuento semanal de barras (umbrales calibrados"
+    fig.suptitle("E-mini S&P 500: Recuento semanal de barras (umbrales calibrados"
                  " a igual recuento)\nMuestra de evaluacion", fontsize=12, fontweight="bold")
     for bt, s in st.items():
         ax.plot(s["s"].index, s["s"].values, lw=1.5, marker="o", ms=3,

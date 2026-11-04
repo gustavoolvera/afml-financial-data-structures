@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-verificar_raw.py — contrasta que todos los contratos de data/raw comparten
+verificar_raw.py: contrasta que todos los contratos de data/raw comparten
 formato, dominios de valores y patron de comportamiento.
 
 POR QUE EXISTE
 --------------
 build_continuous_series() empalma los contratos asumiendo que son homogeneos:
 mismas columnas, mismos tipos, mismo significado de `action` y `side`, misma
-convencion horaria. Si un fichero llega de una descarga distinta —otro esquema
-de Databento, otro publisher, ya filtrado a ejecuciones— el empalme no falla
+convencion horaria. Si un fichero llega de una descarga distinta (otro esquema
+de Databento, otro publisher, ya filtrado a ejecuciones) el empalme no falla
 con un error: produce una serie silenciosamente mal construida.
 
 Este guion compara los contratos ENTRE SI y marca cualquier divergencia. No
@@ -103,7 +103,7 @@ def main() -> int:
     # =========================================================================
     # 1. ESQUEMA
     # =========================================================================
-    hr("1. ESQUEMA — nombres, tipos y orden de las columnas")
+    hr("1. ESQUEMA: nombres, tipos y orden de las columnas")
     firmas = {}
     for s, p in cts:
         esq = pq.ParquetFile(p).schema_arrow
@@ -158,7 +158,7 @@ def main() -> int:
     # =========================================================================
     # 3. DOMINIOS DE VALORES
     # =========================================================================
-    hr("3. DOMINIOS DE VALORES — las categoricas deben significar lo mismo")
+    hr("3. DOMINIOS DE VALORES: las categoricas deben significar lo mismo")
     for c in CATEGORICAS:
         if c not in [n for n, _, _ in ref]:
             continue
@@ -270,7 +270,7 @@ def main() -> int:
     # =========================================================================
     # 6. PATRON DE SESION
     # =========================================================================
-    hr("6. PATRON DE SESION — horarios y huecos")
+    hr("6. PATRON DE SESION: horarios y huecos")
     print(f"  {'contrato':<8} {'dias':>6} {'ticks/dia med':>14} "
           f"{'apertura tipica':>16} {'cierre tipico':>14} {'huecos>1h':>10} "
           f"{'findes':>7} {'mantto':>7} {'otros':>6}")
@@ -301,7 +301,7 @@ def main() -> int:
     # =========================================================================
     # 7. MAGNITUDES
     # =========================================================================
-    hr("7. MAGNITUDES — precio y tamano")
+    hr("7. MAGNITUDES: precio y tamano")
     print(f"  {'contrato':<8} {'precio min':>11} {'precio max':>11} "
           f"{'size min':>9} {'size max':>9} {'size medio':>11} {'size=0':>9}")
     print("  " + "-" * 76)

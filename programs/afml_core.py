@@ -1,6 +1,6 @@
 """
 ═══════════════════════════════════════════════════════════════════════════════
-afml_core — nucleo de metodologia AFML (Lopez de Prado)
+afml_core: nucleo de metodologia AFML (Lopez de Prado)
 ═══════════════════════════════════════════════════════════════════════════════
 
 Este modulo contiene la DEFINICION de los objetos de AFML. No ejecuta ningun
@@ -48,7 +48,7 @@ class AFMLDataError(Exception):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 1 — Carga, rolls y serie continua
+# 1: Carga, rolls y serie continua
 # ═══════════════════════════════════════════════════════════════════════════════
 @dataclass
 class RollReport:
@@ -199,7 +199,7 @@ def count_duplicate_timestamps(df: pd.DataFrame) -> int:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2 — ETF Trick (AFML §2.4.1) y tick rule (AFML §2.3.2.1)
+# 2: ETF Trick (AFML §2.4.1) y tick rule (AFML §2.3.2.1)
 # ═══════════════════════════════════════════════════════════════════════════════
 @njit(cache=True)
 def _etf_trick_kernel(price, phi, is_roll, K0):
@@ -325,7 +325,7 @@ def validate_etf_trick(df: pd.DataFrame, K: np.ndarray, b: np.ndarray,
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3 — Barras estandar (tick / volume / dollar), AFML §2.3.1
+# 3: Barras estandar (tick / volume / dollar), AFML §2.3.1
 # ═══════════════════════════════════════════════════════════════════════════════
 def calibrate_thresholds(df_train: pd.DataFrame, target_bars: int) -> dict:
     """
@@ -443,7 +443,7 @@ def build_standard_bars(df: pd.DataFrame, K: np.ndarray, b: np.ndarray,
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 4 — Dollar Imbalance Bars (AFML §2.3.2.2)
+# 4: Dollar Imbalance Bars (AFML §2.3.2.2)
 # ═══════════════════════════════════════════════════════════════════════════════
 DIB_OK = 0
 DIB_COLLAPSE_ABSORBING = 1
@@ -628,7 +628,7 @@ class DIBReport:
         L.append(f"  Barras completadas         : {self.n_bars:,}")
         L.append(f"  Ticks residuales           : {self.n_residual:,}")
         L.append(f"  Cobertura por barras       : {self.coverage:.4%}")
-        L.append(f"  Estado                     : {self.status} — "
+        L.append(f"  Estado                     : {self.status}: "
                  f"{DIB_STATUS_TEXT[int(self.status)]}")
         L.append(f"  Sin look-ahead intra-barra : {self.no_lookahead}")
         L.append("")
@@ -773,7 +773,7 @@ def _bars_from_index(df: pd.DataFrame, K: np.ndarray, b: np.ndarray,
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 5 — Evaluacion estadistica de retornos
+# 5: Evaluacion estadistica de retornos
 # ═══════════════════════════════════════════════════════════════════════════════
 def log_returns(bars: pd.DataFrame, col: str = "close_K") -> pd.DataFrame:
     """Retornos logaritmicos barra a barra. Descarta no finitos y lo reporta."""
