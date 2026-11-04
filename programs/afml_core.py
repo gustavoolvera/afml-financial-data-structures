@@ -717,8 +717,8 @@ def build_dollar_imbalance_bars(df: pd.DataFrame, K: np.ndarray, b: np.ndarray,
         residual_imbalance=float(bv[resid_start:].sum()),
         traj=traj)
 
-    bars = _bars_from_index(df, K, b, st, en) if nb else _empty_bars(df)
-
+    # Se comprueba ANTES de agregar las barras: _bars_from_index reserva varios GB
+    # con la muestra completa, y con raise_on_degenerate esas barras se descartan.
     if status != DIB_OK and raise_on_degenerate:
         raise DIBDegenerateError(
             f"El proceso DIB de AFML degenero: {DIB_STATUS_TEXT[int(status)]}. "
@@ -726,6 +726,8 @@ def build_dollar_imbalance_bars(df: pd.DataFrame, K: np.ndarray, b: np.ndarray,
             f"La regla de AFML NO se ha modificado; la serie queda marcada "
             f"INVALIDA y debe excluirse de toda comparacion estadistica "
             f"posterior.", rep)
+
+    bars = _bars_from_index(df, K, b, st, en) if nb else _empty_bars(df)
     return bars, rep
 
 

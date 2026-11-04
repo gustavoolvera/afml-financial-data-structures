@@ -308,16 +308,14 @@ def main(max_ticks: int | None = None) -> int:
         dib_valid = True
         print("\n" + dib_rep.to_text())
     except ac.DIBDegenerateError as e:
-        dib_rep = e.report
-        print("\n" + dib_rep.to_text())
         print("\n  " + "!" * 74)
-        print("  DEGENERACION DEL ESTIMADOR AFML: la regla NO se ha modificado.")
-        print(f"  {e}")
+        print("  AVISO: las Dollar Imbalance Bars NO se han podido calcular.")
+        print(f"  Motivo: {ac.DIB_STATUS_TEXT[int(e.report.status)]}.")
+        print("  La regla de AFML NO se ha modificado. Se omite toda la informacion DIB:")
+        print("  reporte, trayectoria, serie, retornos, comparaciones y Paso 7.")
         print("  " + "!" * 74)
 
-    # §8/§9: la serie degenerada NO se guarda con el nombre de una serie valida,
-    # y queda EXCLUIDA de toda comparacion estadistica posterior.
-    if dib_rep is not None and len(dib_rep.traj):
+    if dib_valid:
         traj_file = REPORTS_PATH / "ES_2024_dib_trajectory.parquet"
         dib_rep.traj.to_parquet(traj_file, engine="pyarrow", compression="snappy")
         print(f"\n  Trayectoria (E[T], E[b·v], umbral, θ) guardada: {traj_file}")
@@ -345,10 +343,6 @@ def main(max_ticks: int | None = None) -> int:
                   f"({s['n']:,} vs {d['n']:,}), la comparacion NO esta calibrada a igual N")
             print("    porque forzar el recuento de las DIB exigiria alterar su formula (§14).")
     else:
-        if dib_bars is not None and len(dib_bars):
-            bad = IMBALANCE_PATH / "ES_2024_etf_dollar_imbalance_bars_DEGENERATE.parquet"
-            dib_bars.to_parquet(bad, engine="pyarrow", compression="snappy")
-            print(f"  Serie degenerada guardada aparte: {bad}")
         # No debe quedar en disco ningun artefacto DIB con nombre de serie valida:
         # el proximo lector no sabria que procede de un proceso degenerado.
         for f in (stale, RETURNS_PATH / "ES_2024_etf_dollar_imbalance_returns.parquet"):
@@ -356,18 +350,22 @@ def main(max_ticks: int | None = None) -> int:
                 f.unlink()
                 print(f"  ELIMINADO {f.name}: procede de un proceso DIB degenerado")
                 print("  y estaba presentado como una serie valida.")
-        print("\n  Comparaciones estadisticas con DIB: OMITIDAS (serie invalida, §8).")
 
     # ══════════════════════════════════════════════════════════════════════════
     hr("PASO 7: Robustez: barrido de E_0[T] (¿es un artefacto de la inicializacion?)")
     # ══════════════════════════════════════════════════════════════════════════
-    sweep_E_T_init(df_all, b_t, max_bars)
+    if dib_valid:
+        sweep_E_T_init(df_all, b_t, max_bars)
+    else:
+        print("  OMITIDO: las Dollar Imbalance Bars no se han podido calcular.")
 
     hr("FIN")
     print(f"  Barras   : {BARS_PATH}")
     print(f"  Retornos : {RETURNS_PATH}")
     print(f"  Figuras  : {FIGS_PATH}")
     print(f"  Reportes : {REPORTS_PATH}")
+    if not dib_valid:
+        print("  DIB      : NO calculadas (proceso degenerado); el resto de pasos se completo.")
     return 0 if dib_valid else 2
 
 
