@@ -47,8 +47,8 @@ data/raw/ESZ4_2024-09-20_2024-12-20_trades.parquet
 | Componente | Estado | Nota |
 |---|---|---|
 | Carga y empalme de contratos (rolls) | Funciona | Gap de carry excluido del retorno |
-| ETF trick (§2.4.1) | Funciona | Pasa 5/5 validaciones independientes |
-| Tick rule (§2.3.2.1) | Funciona | Contrastada con el agresor del exchange |
+| ETF trick (§2.4.1) | Funciona | Pasa 5/5 comprobaciones internas de consistencia (4 del índice y 1 del signo `b_t`) |
+| Tick rule (§2.3.2.1) | Funciona | 69.4 % de acuerdo con el agresor del exchange en 69.9 millones de operaciones (ESH4, ESM4 y ESU4; sin ESZ4). El diagnóstico no está en el repo |
 | Tick / Volume / Dollar bars | Funciona | Umbrales calibrados a igual recuento |
 | **Dollar Imbalance Bars (§2.3.2.2)** | **No converge** | Ver abajo |
 | Consolidación y verificación de datos | Funciona | `consolidar_raw.py`, `verificar_raw.py` |
